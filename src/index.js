@@ -3,6 +3,7 @@ import { stdin, stdout } from 'process';
 import { homedir } from 'os';
 
 import { getUsername, lineParser } from './utils/utils.js';
+import { up } from './nwd/up.js';
 
 const rl = readline.createInterface({
   input: stdin,
@@ -24,6 +25,9 @@ rl.on('line', async (line) => {
     switch (command) {
       case '.exit':
         rl.close()
+        break;
+      case 'up':
+        currentDir = up(currentDir, args)
         break;
     
       default:
