@@ -1,4 +1,6 @@
+import { isAbsolute, join, sep, resolve } from 'path';
 import { argv } from 'process';
+import { access, stat, constants } from 'fs/promises';
 
 const quotes = {
   single: '\'',
@@ -43,4 +45,21 @@ export const lineParser = (line) => {
   }
 
   return [command]
+}
+
+export const normalizePath = (currentPath, path) => {
+  if (currentPath.split(sep).length <= 1) {
+    return isAbsolute(path) ? path : resolve(currentPath, path)
+  }
+
+  return isAbsolute(path) ? path : join(currentPath, path)
+}
+
+export const checkIsDirectory = async (path) => {
+  await access(path, constants.F_OK).catch(() => { throw new Error('Operation failed') })
+  const dir = await stat(path)
+
+  if (!dir.isDirectory()) {
+    throw new Error('Operation failed')
+  }
 }

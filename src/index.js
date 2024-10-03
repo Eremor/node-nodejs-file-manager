@@ -4,6 +4,7 @@ import { homedir } from 'os';
 
 import { getUsername, lineParser } from './utils/utils.js';
 import { up } from './nwd/up.js';
+import { cd } from './nwd/cd.js';
 
 const rl = readline.createInterface({
   input: stdin,
@@ -28,6 +29,9 @@ rl.on('line', async (line) => {
         break;
       case 'up':
         currentDir = up(currentDir, args)
+        break;
+      case 'cd':
+        currentDir = await cd(currentDir, args)
         break;
     
       default:
