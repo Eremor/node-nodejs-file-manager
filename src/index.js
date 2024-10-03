@@ -5,6 +5,7 @@ import { homedir } from 'os';
 import { getUsername, lineParser } from './utils/utils.js';
 import { up } from './nwd/up.js';
 import { cd } from './nwd/cd.js';
+import { ls } from './nwd/ls.js';
 
 const rl = readline.createInterface({
   input: stdin,
@@ -32,6 +33,9 @@ rl.on('line', async (line) => {
         break;
       case 'cd':
         currentDir = await cd(currentDir, args)
+        break;
+      case 'ls':
+        await ls(currentDir, args)
         break;
     
       default:
