@@ -5,6 +5,7 @@ import { access, stat, constants } from 'fs/promises';
 const quotes = {
   single: '\'',
   double: '\"',
+  back: '\`',
   none: ' '
 }
 
@@ -14,18 +15,23 @@ export const getUsername = () => {
   return (username === '' || !username) ? 'anonymous' : username;
 }
 
-const separateArgs = (line) => {
-  let sep;
+const separateQuotes = (line) => {
+  let quoteSep;
 
   if (line.includes(quotes.single)) {
-    sep = quotes.single;
+    quoteSep = quotes.single;
   } else if (line.includes(quotes.double)) {
-    sep = quotes.double;
+    quoteSep = quotes.double;
+  } else if (line.includes(quotes.back)) {
+    quoteSep = quotes.back;
   } else {
-    sep = quotes.none;
+    quoteSep = quotes.none;
   }
 
-  const args = line.split(sep).filter((item) => item.trim().length > 0)
+  const args = line
+                .split(quoteSep)
+                .filter((item) => item.trim().length > 0)
+                .map((item) => item.trim())
 
   return args;
 }
@@ -35,13 +41,13 @@ export const lineParser = (line) => {
     throw new Error('Invalid input')
   }
 
-  const argsArr = separateArgs(line)
+  const lineArr = separateQuotes(line);
 
-  const command = argsArr[0].trim();
+  const command = lineArr[0]
 
-  if (argsArr.length > 1) {
-    const args = argsArr.slice(1).map((arg) => arg.includes(' ') ? separateArgs(arg) : arg)
-    return [command, args.flat()]
+  if (lineArr.length > 1) {
+    const args = lineArr.slice(1)
+    return [command, args]
   }
 
   return [command]
