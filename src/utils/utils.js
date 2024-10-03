@@ -63,3 +63,12 @@ export const checkIsDirectory = async (path) => {
     throw new Error('Operation failed')
   }
 }
+
+export const checkIsFile = async (path) => {
+  await access(path, constants.F_OK).catch(() => { throw new Error('Operation failed') })
+  const file = await stat(path)
+
+  if (!file.isFile()) {
+    throw new Error('Operation failed')
+  }
+}
