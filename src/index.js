@@ -8,6 +8,7 @@ import { cd } from './nwd/cd.js';
 import { ls } from './nwd/ls.js';
 import { readFile } from './fs/read.js';
 import { createFile } from './fs/create.js';
+import { renameFile } from './fs/rename.js';
 
 const rl = readline.createInterface({
   input: stdin,
@@ -44,6 +45,9 @@ rl.on('line', async (line) => {
         break;
       case 'add':
         await createFile(currentDir, args)
+        break;
+      case 'rn':
+        await renameFile(currentDir, args)
         break;
     
       default:
