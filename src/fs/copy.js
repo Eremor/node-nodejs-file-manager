@@ -1,12 +1,11 @@
 import {
   createReadStream,
-  createWriteStream,
-  access,
-  constants
+  createWriteStream
 } from 'fs';
 import { sep } from 'path';
+import { access, constants } from 'fs/promises';
 import { pipeline } from 'stream/promises';
-import { checkIsDirectory, checkIsFile, normalizePath } from '../utils/utils.js';
+import { checkIsDirectory, checkIsFile, generateCopyFileName, normalizePath } from '../utils/utils.js';
 
 export const copyFile = async (currentDir, args) => {
   if (!args || args.length !== 2) {
@@ -23,22 +22,28 @@ export const copyFile = async (currentDir, args) => {
 
     const copyFile = oldFilePath.split(sep).slice(-1);
     const copyFilePath = normalizePath(newFolderPath, ...copyFile);
+    let isExist = false
 
-    return new Promise((res, rej) => {
-      access(copyFilePath, constants.F_OK, (err) => {
-        if (err) {
-          const rs = createReadStream(oldFilePath);
-          const ws = createWriteStream(copyFilePath);
-          pipeline(
-            rs,
-            ws
-          )
-          res();
-        } else {
-          rej(new Error('Operation failed'))
-        }
-      })
-    })
+    await access(copyFilePath, constants.F_OK)
+      .then(() => isExist = true)
+      .catch(() => isExist = false)
+    
+    let newFilePath;
+
+    if (isExist) {
+      const newCopyFileName = await generateCopyFileName(...copyFile, newFolderPath)
+      newFilePath = normalizePath(newFolderPath, newCopyFileName)
+    } else {
+      newFilePath = copyFilePath
+    }
+
+    const rs = createReadStream(oldFilePath)
+    const ws = createWriteStream(newFilePath)
+
+    await pipeline(
+      rs,
+      ws
+    )
   } catch {
     throw new Error('Operation failed')
   }

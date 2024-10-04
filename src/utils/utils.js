@@ -78,3 +78,16 @@ export const checkIsFile = async (path) => {
     throw new Error('Operation failed')
   }
 }
+
+export const generateCopyFileName = async (fileName, folder) => {
+  const [name, fileType] = fileName.split('.');
+  const newName = name + '-(copy)';
+  const newFileName = `${newName}.${fileType}`;
+  const path = normalizePath(folder, newFileName)
+  let isExist = false;
+  await access(path, constants.F_OK)
+    .then(() => isExist = true)
+    .catch(() => isExist = false);
+  
+  return isExist ? await generateCopyFileName(newFileName, folder) : newFileName;
+}
