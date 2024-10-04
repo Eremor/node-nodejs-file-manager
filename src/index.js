@@ -15,6 +15,7 @@ import { deleteFile } from './fs/delete.js';
 import { osInfo } from './os/os.js';
 import { calcHash } from './hash/hash.js';
 import { compressFile } from './zip/compress.js';
+import { decompressFile } from './zip/decompress.js';
 
 const rl = readline.createInterface({
   input: stdin,
@@ -73,7 +74,9 @@ rl.on('line', async (line) => {
       case 'compress':
         await compressFile(currentDir, args)
         break;
-    
+      case 'decompress':
+        await decompressFile(currentDir, args)
+        break;
       default:
         throw new Error('Invalid input')
     }
